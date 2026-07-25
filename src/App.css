@@ -1,0 +1,78 @@
+.app {
+  max-width: 500px;
+  margin: 40px auto;
+  font-family: system-ui, sans-serif;
+}
+
+h1 {
+  text-align: center;
+  color: #333;
+}
+
+.add-form {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.add-form input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+.add-form button {
+  padding: 10px 20px;
+  background: #4f46e5;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.add-form button:hover {
+  background: #4338ca;
+}
+
+.todo-list {
+  list-style: none;
+  padding: 0;
+}
+
+.todo-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.todo-list li.completed span {
+  text-decoration: line-through;
+  color: #999;
+}
+
+.todo-list li span {
+  flex: 1;
+  font-size: 16px;
+}
+
+.delete-btn {
+  background: none;
+  border: none;
+  color: #e53e3e;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.delete-btn:hover {
+  color: #c53030;
+}
+
+.empty {
+  text-align: center;
+  color: #999;
+}
