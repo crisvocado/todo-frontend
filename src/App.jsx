@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
+import logger from './persea-logger'
 import './App.css'
 
-const API_URL = 'http://localhost:8010'
+const API_URL = 'https://todo-api-888683409951.us-central1.run.app'
 
 function App() {
   const [todos, setTodos] = useState([])
@@ -74,6 +75,20 @@ function App() {
       </ul>
 
       {todos.length === 0 && <p className="empty">No todos yet. Add one above!</p>}
+
+      <button
+        className="delete-btn"
+        style={{ marginTop: '2rem', padding: '0.5rem 1rem', background: '#e74c3c', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+        onClick={() => {
+          try {
+            throw new Error('Test error: something broke in the TODO app!')
+          } catch (err) {
+            logger.error(err.message, { context: { action: 'test-error-button' } })
+          }
+        }}
+      >
+        Trigger Test Error
+      </button>
     </div>
   )
 }
