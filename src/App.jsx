@@ -87,7 +87,23 @@ function App() {
           }
         }}
       >
-        Trigger Test Error
+        Trigger Frontend Error
+      </button>
+
+      <button
+        style={{ marginTop: '0.5rem', padding: '0.5rem 1rem', background: '#8e44ad', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+        onClick={async () => {
+          try {
+            const res = await fetch(`${API_URL}/trigger-error`, { method: 'POST' })
+            if (!res.ok) {
+              logger.error(`Server error: ${res.status}`, { context: { action: 'trigger-server-error', status: res.status } })
+            }
+          } catch (err) {
+            logger.error(err.message, { context: { action: 'trigger-server-error' } })
+          }
+        }}
+      >
+        Trigger Server Error (500)
       </button>
     </div>
   )
