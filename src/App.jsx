@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import logger from './persea-logger'
 import './App.css'
 
-const API_URL = 'https://todo-api-888683409951.us-central1.run.app'
+const API_URL = 'https://todo-api-1038835828100.us-central1.run.app'
 
 function App() {
   const [todos, setTodos] = useState([])

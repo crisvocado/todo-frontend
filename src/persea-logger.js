@@ -1,5 +1,5 @@
 // src/persea-logger.js
-import { Logger, GatewayTransport } from "@ablock/logger";
+import { Logger, GatewayTransport } from "@avocadoblock/logger";
 
 const logger = new Logger({
   service: "todo-frontend",
