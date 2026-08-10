@@ -4,6 +4,10 @@ import './App.css'
 
 const API_URL = 'https://todo-api-1038835828100.us-central1.run.app'
 
+export function getCompletedCount(todos) {
+  return todos.filter((t) => !t.completed).length
+}
+
 function App() {
   const [todos, setTodos] = useState([])
   const [newTitle, setNewTitle] = useState('')
@@ -11,6 +15,18 @@ function App() {
   useEffect(() => {
     fetchTodos()
   }, [])
+
+  useEffect(() => {
+    if (todos.length > 0) {
+      const actual = todos.filter((t) => t.completed).length
+      const reported = getCompletedCount(todos)
+      if (reported !== actual) {
+        logger.error(`Completed count mismatch: getCompletedCount returned ${reported} but actual is ${actual}`, {
+          context: { action: 'stats-validation', reported, actual, total: todos.length },
+        })
+      }
+    }
+  }, [todos])
 
   async function fetchTodos() {
     const res = await fetch(`${API_URL}/todos`)
@@ -74,21 +90,11 @@ function App() {
         ))}
       </ul>
 
-      {todos.length === 0 && <p className="empty">No todos yet. Add one above!</p>}
+      <p className="stats">
+        {todos.length} total, {getCompletedCount(todos)} completed
+      </p>
 
-      <button
-        className="delete-btn"
-        style={{ marginTop: '2rem', padding: '0.5rem 1rem', background: '#e74c3c', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-        onClick={() => {
-          try {
-            throw new Error('Test error: something broke in the TODO app!')
-          } catch (err) {
-            logger.error(err.message, { context: { action: 'test-error-button' } })
-          }
-        }}
-      >
-        Trigger Frontend Error
-      </button>
+      {todos.length === 0 && <p className="empty">No todos yet. Add one above!</p>}
 
       <button
         style={{ marginTop: '0.5rem', padding: '0.5rem 1rem', background: '#8e44ad', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
