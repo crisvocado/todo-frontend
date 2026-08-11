@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import logger from './persea-logger'
 import './App.css'
 
 const API_URL = 'https://todo-api-1038835828100.us-central1.run.app'
@@ -20,7 +21,9 @@ function App() {
       const actual = todos.filter((t) => t.completed).length
       const reported = getCompletedCount(todos)
       if (reported !== actual) {
-        console.error(`Completed count mismatch: getCompletedCount returned ${reported} but actual is ${actual}`)
+        logger.error(`Completed count mismatch: getCompletedCount returned ${reported} but actual is ${actual}`, {
+          context: { action: 'stats-validation', reported, actual, total: todos.length },
+        })
       }
     }
   }, [todos])
