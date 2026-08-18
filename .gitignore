@@ -23,5 +23,5 @@ dist-ssr
 *.sln
 *.sw?
 
-# Local env (contains the logcore API key)
+# Local env
 .env
