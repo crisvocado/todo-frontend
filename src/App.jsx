@@ -1,5 +1,4 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
-import { log, logError } from './logcore/client.js'
 import './App.css'
 
 const API_URL = 'https://todo-api-1038835828100.us-central1.run.app'
@@ -7,7 +6,7 @@ const API_URL = 'https://todo-api-1038835828100.us-central1.run.app'
 const EXIT_MS = 260
 
 export function getCompletedCount(todos) {
-  return todos.filter((t) => !t.completed).length
+  return todos.filter((t) => t.completed).length
 }
 
 function App() {
@@ -23,26 +22,6 @@ function App() {
   useEffect(() => {
     fetchTodos()
   }, [])
-
-  // getCompletedCount is wrong but never throws, so no global handler or error
-  // boundary can see it. Recomputing the count here and comparing is the only
-  // way this class of silent bug reaches logcore.
-  useEffect(() => {
-    if (todos.length === 0) return
-    const actual = todos.filter((t) => t.completed).length
-    const reported = getCompletedCount(todos)
-    if (reported !== actual) {
-      log(
-        'ERROR',
-        `Completed count mismatch: getCompletedCount returned ${reported} but actual is ${actual}`,
-        {
-          labels: { handler: 'stats-validation' },
-          context: { reported, actual, total: todos.length },
-          fingerprint: 'todo-frontend:completed-count-mismatch',
-        },
-      )
-    }
-  }, [todos])
 
   const today = useMemo(
     () =>
@@ -69,15 +48,11 @@ function App() {
         firstLoad.current = false
         setTimeout(() => setStagger(false), 900)
       }
-    } catch (error) {
+    } catch {
       // Si ya hay lista en pantalla no se sustituye por un panel de error: se
       // deja la lista y se avisa. El panel es solo para la carga inicial.
       setStatus((prev) => (prev === 'ready' ? 'ready' : 'error'))
       setNotice((prev) => prev || 'No se pudo actualizar la lista.')
-      logError('Failed to load todos', error, {
-        labels: { handler: 'fetch-todos' },
-        fingerprint: 'todo-frontend:fetch-todos-failed',
-      })
     }
   }
 
@@ -96,12 +71,8 @@ function App() {
       if (!res.ok) throw new Error(`POST /todos responded ${res.status}`)
       setNewTitle('')
       await fetchTodos()
-    } catch (error) {
+    } catch {
       setNotice('No se pudo guardar la tarea. Vuelve a intentarlo.')
-      logError('Failed to add todo', error, {
-        labels: { handler: 'add-todo' },
-        fingerprint: 'todo-frontend:add-todo-failed',
-      })
     } finally {
       setAdding(false)
     }
@@ -123,15 +94,11 @@ function App() {
       })
       if (!res.ok) throw new Error(`PATCH /todos responded ${res.status}`)
       await fetchTodos()
-    } catch (error) {
+    } catch {
       setTodos((prev) =>
         prev.map((t) => (t.id === todo.id ? { ...t, completed: !next } : t)),
       )
       setNotice('No se pudo guardar el cambio. Revisa la conexión.')
-      logError('Failed to toggle todo', error, {
-        labels: { handler: 'toggle-todo' },
-        fingerprint: 'todo-frontend:toggle-todo-failed',
-      })
     }
   }
 
@@ -143,12 +110,8 @@ function App() {
       const res = await fetch(`${API_URL}/todos/${id}`, { method: 'DELETE' })
       if (!res.ok) throw new Error(`DELETE /todos responded ${res.status}`)
       await fetchTodos()
-    } catch (error) {
+    } catch {
       setNotice('No se pudo eliminar la tarea. Vuelve a intentarlo.')
-      logError('Failed to delete todo', error, {
-        labels: { handler: 'delete-todo' },
-        fingerprint: 'todo-frontend:delete-todo-failed',
-      })
     } finally {
       setLeaving((prev) => prev.filter((leavingId) => leavingId !== id))
     }
