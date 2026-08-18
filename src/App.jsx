@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { log } from './logcore/client.js'
 import './App.css'
 
 const API_URL = 'https://todo-api-1038835828100.us-central1.run.app'
@@ -14,6 +15,26 @@ function App() {
   useEffect(() => {
     fetchTodos()
   }, [])
+
+  // getCompletedCount is wrong but never throws, so no global handler or error
+  // boundary can see it. Recomputing the count here and comparing is the only
+  // way this class of silent bug reaches logcore.
+  useEffect(() => {
+    if (todos.length === 0) return
+    const actual = todos.filter((t) => t.completed).length
+    const reported = getCompletedCount(todos)
+    if (reported !== actual) {
+      log(
+        'ERROR',
+        `Completed count mismatch: getCompletedCount returned ${reported} but actual is ${actual}`,
+        {
+          labels: { handler: 'stats-validation' },
+          context: { reported, actual, total: todos.length },
+          fingerprint: 'todo-frontend:completed-count-mismatch',
+        },
+      )
+    }
+  }, [todos])
 
   async function fetchTodos() {
     const res = await fetch(`${API_URL}/todos`)
