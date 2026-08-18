@@ -36,7 +36,15 @@ function insertId(parts) {
     .join('')
 }
 
-export function buildEntry({ severity, message, error, context, config }) {
+export function buildEntry({
+  severity,
+  message,
+  error,
+  context,
+  labels,
+  fingerprint,
+  config,
+}) {
   const timestamp = new Date().toISOString()
   const parsed = error ? errorFromException(error) : null
   const topFrame = parsed?.stack?.[0] ?? {}
@@ -60,6 +68,10 @@ export function buildEntry({ severity, message, error, context, config }) {
   // proyecto de GCP y el esquema valida el campo si viene presente.
   if (parsed) entry.error = parsed
   if (context) entry.context = context
+  if (labels) entry.labels = labels
+  // Solo para agrupar a mano. Sin fingerprint, logcore lo deriva del mensaje y
+  // del stack, que es lo que se quiere en el caso normal.
+  if (fingerprint) entry.fingerprint = fingerprint
   return entry
 }
 
@@ -81,16 +93,27 @@ export function sendEntry(entry, config = readConfig()) {
   }
 }
 
-export function logError(error, { message, context, severity = 'ERROR' } = {}) {
+// Emite sin exigir una excepción: hay fallos que no lanzan y que solo se
+// detectan comparando un valor contra el que debería ser.
+export function log(severity, message, { error, context, labels, fingerprint } = {}) {
   const config = readConfig()
   if (!config.enabled) return null
   const entry = buildEntry({
     severity,
-    message: message ?? String(error?.message ?? error),
+    message,
     error,
     context,
+    labels,
+    fingerprint,
     config,
   })
   sendEntry(entry, config)
   return entry
+}
+
+export function logError(error, { message, context, severity = 'ERROR' } = {}) {
+  return log(severity, message ?? String(error?.message ?? error), {
+    error,
+    context,
+  })
 }
