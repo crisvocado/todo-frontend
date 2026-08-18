@@ -7,7 +7,7 @@ const API_URL = 'https://todo-api-1038835828100.us-central1.run.app'
 const EXIT_MS = 260
 
 export function getCompletedCount(todos) {
-  return todos.filter((t) => !t.completed).length
+  return todos.filter((t) => t.completed).length
 }
 
 function App() {
