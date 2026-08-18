@@ -1,78 +1,573 @@
-.app {
-  max-width: 500px;
-  margin: 40px auto;
-  font-family: system-ui, sans-serif;
-}
-
-h1 {
-  text-align: center;
-  color: #333;
-}
-
-.add-form {
+.page {
   display: flex;
-  gap: 8px;
-  margin-bottom: 20px;
+  justify-content: center;
+  padding: 0 20px 64px;
 }
 
-.add-form input {
-  flex: 1;
-  padding: 10px 14px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: 16px;
+.sheet {
+  width: 100%;
+  max-width: 620px;
+  padding-top: clamp(48px, 11vh, 104px);
 }
 
-.add-form button {
-  padding: 10px 20px;
-  background: #4f46e5;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 16px;
+/* ---------------------------------------------------------------- masthead */
+
+.masthead {
+  animation: rise 620ms var(--ease) both;
 }
 
-.add-form button:hover {
-  background: #4338ca;
-}
-
-.todo-list {
-  list-style: none;
-  padding: 0;
-}
-
-.todo-list li {
+.eyebrow {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 12px;
-  border-bottom: 1px solid #eee;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--dim);
 }
 
-.todo-list li.completed span {
-  text-decoration: line-through;
-  color: #999;
+.eyebrow-sep {
+  color: var(--line-strong);
 }
 
-.todo-list li span {
+.eyebrow-count {
+  color: var(--amber);
+}
+
+.masthead-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-top: 10px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--line);
+}
+
+.title {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: clamp(52px, 13vw, 84px);
+  line-height: 0.86;
+  letter-spacing: -0.045em;
+  color: var(--chalk);
+}
+
+.tally {
+  flex: 0 0 auto;
+  width: 150px;
+  padding-bottom: 4px;
+}
+
+.tally-figure {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  font-family: var(--mono);
+  font-size: 15px;
+  color: var(--dim);
+}
+
+.tally-done {
+  color: var(--sage);
+  font-variant-numeric: tabular-nums;
+}
+
+.tally-slash,
+.tally-total {
+  color: var(--dim);
+  font-variant-numeric: tabular-nums;
+}
+
+.tally-label {
+  margin-left: 4px;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* Un segmento por tarea. Con 5 tareas hay 5 tramos, no un porcentaje. */
+.meter {
+  display: flex;
+  gap: 3px;
+  height: 6px;
+  margin-top: 9px;
+}
+
+.meter-seg,
+.meter-empty {
+  flex: 1 1 0;
+  min-width: 3px;
+  border-radius: 2px;
+  background: var(--line);
+  transition:
+    background-color 420ms var(--ease),
+    transform 420ms var(--ease);
+  transform-origin: bottom;
+}
+
+/* Sin tareas no hay tramos que contar: la pista se dibuja punteada para que se
+   lea como un medidor vacío y no como una regla suelta. */
+.meter-empty {
+  background: repeating-linear-gradient(
+    90deg,
+    var(--line) 0 24px,
+    transparent 24px 27px
+  );
+  opacity: 0.7;
+}
+
+.meter-seg.is-done {
+  background: var(--sage);
+  transform: scaleY(1.6);
+}
+
+/* ---------------------------------------------------------------- composer */
+
+.composer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 28px;
+  padding: 6px 6px 6px 14px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  transition:
+    border-color 200ms var(--ease),
+    background-color 200ms var(--ease),
+    box-shadow 200ms var(--ease);
+  animation: rise 620ms 80ms var(--ease) both;
+}
+
+.composer:focus-within {
+  border-color: var(--amber);
+  background: var(--surface-hi);
+  box-shadow: 0 0 0 4px var(--amber-soft);
+}
+
+.composer-mark {
+  display: flex;
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  color: var(--dim);
+  transition: color 200ms var(--ease);
+}
+
+.composer:focus-within .composer-mark {
+  color: var(--amber);
+}
+
+.composer-mark svg {
+  width: 100%;
+  height: 100%;
+}
+
+.composer-input {
   flex: 1;
-  font-size: 16px;
+  min-width: 0;
+  padding: 10px 0;
+  background: none;
+  border: 0;
+  color: var(--chalk);
+  caret-color: var(--amber);
 }
 
-.delete-btn {
-  background: none;
-  border: none;
-  color: #e53e3e;
-  font-size: 20px;
+.composer-input::placeholder {
+  color: var(--dim);
+}
+
+.composer-input:focus {
+  outline: none;
+}
+
+.composer-submit {
+  flex: 0 0 auto;
+  padding: 10px 18px;
+  background: var(--chalk);
+  color: var(--ground);
+  border: 0;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition:
+    background-color 180ms var(--ease),
+    transform 180ms var(--ease),
+    opacity 180ms var(--ease);
+}
+
+.composer-submit:hover:not(:disabled) {
+  background: var(--amber);
+}
+
+.composer-submit:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
+.composer-submit:disabled {
+  opacity: 0.5;
+  cursor: progress;
+}
+
+/* ------------------------------------------------------------------- lista */
+
+.list {
+  margin-top: 10px;
+}
+
+.task {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 4px 2px 0;
+  border-bottom: 1px solid var(--line);
+  transition: border-color 300ms var(--ease);
+}
+
+.list .task:last-child {
+  border-bottom: 0;
+}
+
+.list.is-entering .task {
+  animation: rise 500ms var(--ease) both;
+  animation-delay: calc(var(--i) * 55ms + 160ms);
+}
+
+.task.is-leaving {
+  overflow: hidden;
+  animation: collapse 260ms var(--ease) forwards;
+  pointer-events: none;
+}
+
+.task-check {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: 1;
+  min-width: 0;
+  padding: 15px 6px 15px 2px;
   cursor: pointer;
 }
 
-.delete-btn:hover {
-  color: #c53030;
+.task-check input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
 }
 
+.task-box {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: 7px;
+  color: var(--ground);
+  transition:
+    background-color 220ms var(--ease),
+    border-color 220ms var(--ease),
+    transform 220ms var(--ease);
+}
+
+.task-check:hover .task-box {
+  border-color: var(--amber);
+}
+
+.task-check input:focus-visible + .task-box {
+  outline: 2px solid var(--amber);
+  outline-offset: 3px;
+}
+
+.task-box svg {
+  width: 15px;
+  height: 15px;
+}
+
+.task-box path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 240ms var(--ease);
+}
+
+.task-body {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Inline a propósito: así el trazo mide el texto, no la fila. */
+.task-text {
+  color: var(--chalk);
+  overflow-wrap: anywhere;
+  /* La firma: un trazo dibujado a mano, no un line-through del navegador.
+     Va como fondo para que siga el texto aunque salte de línea. */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 9' preserveAspectRatio='none'%3E%3Cpath d='M0.6 5.4C13 2.6 25 6.6 39 4.6 53 2.6 65 6.8 79 4.8 92 2.9 104 6.9 119.4 4.1' fill='none' stroke='%2386c09a' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: 0 56%;
+  background-size: 0% 9px;
+  transition:
+    color 300ms var(--ease),
+    background-size 260ms var(--ease);
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+/* Coreografía al completar: se llena la casilla, se dibuja el check, se traza
+   el tachado, y solo entonces el texto se apaga. */
+.task.is-done .task-box {
+  background: var(--sage);
+  border-color: var(--sage);
+}
+
+.task.is-done .task-box path {
+  stroke-dashoffset: 0;
+  transition-delay: 60ms;
+}
+
+.task.is-done .task-text {
+  color: var(--dim);
+  background-size: 100% 9px;
+  transition:
+    color 340ms 200ms var(--ease),
+    background-size 440ms 140ms var(--ease);
+}
+
+.task-delete {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  background: none;
+  border: 0;
+  border-radius: 50%;
+  color: var(--dim);
+  cursor: pointer;
+  opacity: 0;
+  transform: scale(0.85);
+  transition:
+    opacity 180ms var(--ease),
+    transform 180ms var(--ease),
+    color 180ms var(--ease),
+    background-color 180ms var(--ease);
+}
+
+.task-delete svg {
+  width: 17px;
+  height: 17px;
+}
+
+.task:hover .task-delete,
+.task-delete:focus-visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.task-delete:hover {
+  color: var(--danger);
+  background: rgba(232, 132, 106, 0.12);
+}
+
+@media (hover: none) {
+  .task-delete {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* --------------------------------------------------- vacío, carga y errores */
+
 .empty {
-  text-align: center;
-  color: #999;
+  padding: 46px 0 8px;
+  font-size: 17px;
+  color: var(--chalk-2);
+  animation: rise 500ms 120ms var(--ease) both;
+}
+
+.empty span {
+  display: block;
+  margin-top: 4px;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+
+.skeleton {
+  margin-top: 10px;
+}
+
+.skeleton li {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 17px 0;
+  border-bottom: 1px solid var(--line);
+  animation: pulse 1.5s var(--ease) infinite;
+  animation-delay: calc(var(--i) * 140ms);
+}
+
+.skeleton-box {
+  width: 22px;
+  height: 22px;
+  border-radius: 7px;
+  background: var(--surface);
+}
+
+.skeleton-line {
+  height: 11px;
+  border-radius: 6px;
+  background: var(--surface);
+  width: 62%;
+}
+
+.skeleton li:nth-child(2) .skeleton-line {
+  width: 44%;
+}
+
+.skeleton li:nth-child(3) .skeleton-line {
+  width: 71%;
+}
+
+.notice,
+.panel {
+  margin-top: 14px;
+  padding: 14px 16px;
+  border-radius: var(--radius);
+  background: rgba(232, 132, 106, 0.08);
+  border: 1px solid rgba(232, 132, 106, 0.28);
+  color: var(--chalk-2);
+  font-size: 14px;
+  animation: rise 320ms var(--ease) both;
+}
+
+.panel-title {
+  color: var(--chalk);
+  font-weight: 600;
+}
+
+.panel-body {
+  margin-top: 2px;
+}
+
+.panel-action {
+  margin-top: 12px;
+  padding: 8px 16px;
+  background: none;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  color: var(--chalk);
+  font-size: 14px;
+  cursor: pointer;
+  transition:
+    border-color 180ms var(--ease),
+    color 180ms var(--ease);
+}
+
+.panel-action:hover {
+  border-color: var(--amber);
+  color: var(--amber);
+}
+
+/* ------------------------------------------------------------------ footer */
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 40px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+
+.stats {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+
+.demo-trigger {
+  padding: 7px 12px;
+  background: none;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-sm);
+  color: var(--dim);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition:
+    color 180ms var(--ease),
+    border-color 180ms var(--ease);
+}
+
+.demo-trigger:hover {
+  color: var(--danger);
+  border-color: var(--danger);
+}
+
+/* -------------------------------------------------------------- movimiento */
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes collapse {
+  from {
+    opacity: 1;
+    max-height: 200px;
+  }
+  to {
+    opacity: 0;
+    transform: translateX(18px);
+    max-height: 0;
+    border-bottom-color: transparent;
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
+/* ------------------------------------------------------------------- móvil */
+
+@media (max-width: 540px) {
+  .masthead-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .tally {
+    width: 100%;
+  }
+
+  .footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
 }
