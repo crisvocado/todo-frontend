@@ -1,13 +1,12 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
 import './App.css'
-import { log } from './logcore/client'
 
 const API_URL = 'https://todo-api-1038835828100.us-central1.run.app'
 
 const EXIT_MS = 260
 
 export function getCompletedCount(todos) {
-  return todos.filter((t) => !t.completed).length
+  return todos.filter((t) => t.completed).length
 }
 
 function App() {
@@ -23,26 +22,6 @@ function App() {
   useEffect(() => {
     fetchTodos()
   }, [])
-
-  // getCompletedCount da un número mal, pero no lanza: ni los handlers globales
-  // ni el boundary pueden verlo. Recalcular el conteo aquí y compararlo es la
-  // única vía por la que un fallo silencioso como este llega a logcore.
-  useEffect(() => {
-    if (todos.length === 0) return
-    const actual = todos.filter((t) => t.completed).length
-    const reported = getCompletedCount(todos)
-    if (reported !== actual) {
-      log(
-        'ERROR',
-        `Completed count mismatch: getCompletedCount returned ${reported} but actual is ${actual}`,
-        {
-          labels: { handler: 'stats-validation' },
-          context: { reported, actual, total: todos.length },
-          fingerprint: 'todo-frontend:completed-count-mismatch',
-        },
-      )
-    }
-  }, [todos])
 
   const today = useMemo(
     () =>
