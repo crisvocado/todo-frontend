@@ -35,6 +35,14 @@
   color: var(--amber);
 }
 
+.eyebrow-next {
+  max-width: 22ch;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--chalk);
+}
+
 .masthead-row {
   display: flex;
   align-items: flex-end;
