@@ -9,6 +9,10 @@ export function getCompletedCount(todos) {
   return todos.filter((t) => t.completed).length
 }
 
+export function nextTaskLabel(todos) {
+  return todos.find((task) => !task.completed).title
+}
+
 function App() {
   const [todos, setTodos] = useState([])
   const [newTitle, setNewTitle] = useState('')
@@ -127,6 +131,12 @@ function App() {
             <span className="eyebrow-count">
               {pending === 1 ? '1 pendiente' : `${pending} pendientes`}
             </span>
+            {todos.length > 0 && (
+              <>
+                <span className="eyebrow-sep" aria-hidden="true">/</span>
+                <span className="eyebrow-next">Sigue · {nextTaskLabel(todos)}</span>
+              </>
+            )}
           </p>
 
           <div className="masthead-row">
