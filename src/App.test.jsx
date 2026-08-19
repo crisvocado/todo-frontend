@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { getCompletedCount } from './App'
+import { nextTaskLabel } from './App'
 
 describe('getCompletedCount', () => {
   it('returns 0 when no todos are completed', () => {
@@ -29,5 +30,28 @@ describe('getCompletedCount', () => {
 
   it('returns 0 for an empty list', () => {
     expect(getCompletedCount([])).toBe(0)
+  })
+})
+
+describe('nextTaskLabel', () => {
+  it('returns the title of the first pending task', () => {
+    const todos = [
+      { id: 1, title: 'a', completed: true },
+      { id: 2, title: 'b', completed: false },
+      { id: 3, title: 'c', completed: false },
+    ]
+    expect(nextTaskLabel(todos)).toBe('b')
+  })
+
+  it('returns undefined when all tasks are completed', () => {
+    const todos = [
+      { id: 1, title: 'a', completed: true },
+      { id: 2, title: 'b', completed: true },
+    ]
+    expect(nextTaskLabel(todos)).toBeUndefined()
+  })
+
+  it('returns undefined for an empty list', () => {
+    expect(nextTaskLabel([])).toBeUndefined()
   })
 })
