@@ -13,7 +13,12 @@ export function installGlobalHandlers(target = window) {
   }
 
   function onUnhandledRejection(event) {
-    logError('unhandled promise rejection', event.reason, {
+    const reason = event?.reason
+    const message =
+      (reason instanceof Error && reason.message) ||
+      (typeof reason === 'string' && reason) ||
+      'unhandled promise rejection'
+    logError(message, reason, {
       labels: { handler: 'unhandledrejection' },
     })
   }

@@ -117,3 +117,68 @@ describe('parse-stack', () => {
     })
   })
 })
+
+describe('global-handlers', () => {
+  let cleanups = []
+
+  beforeEach(() => {
+    vi.unstubAllGlobals()
+    cleanups = []
+  })
+
+  afterEach(() => {
+    cleanups.forEach((cleanup) => cleanup())
+    cleanups = []
+  })
+
+  it('reports unhandled promise rejection with the error message and reason', async () => {
+    const { installGlobalHandlers } = await import('./global-handlers')
+    const posted = capturePostedEntry()
+    const uninstall = installGlobalHandlers(window)
+    cleanups.push(uninstall)
+
+    const event = new Event('unhandledrejection')
+    event.reason = new Error('database connection lost')
+    window.dispatchEvent(event)
+
+    const { entry } = posted()
+    expect(entry.severity).toBe('ERROR')
+    expect(entry.message).toBe('database connection lost')
+    expect(entry.labels).toEqual({ handler: 'unhandledrejection' })
+    expect(entry.error.message).toBe('database connection lost')
+  })
+
+  it('falls back to string reason or default message when error message is missing', async () => {
+    const { installGlobalHandlers } = await import('./global-handlers')
+    const posted = capturePostedEntry()
+    const uninstall = installGlobalHandlers(window)
+    cleanups.push(uninstall)
+
+    const stringEvent = new Event('unhandledrejection')
+    stringEvent.reason = 'failed to fetch config'
+    window.dispatchEvent(stringEvent)
+
+    expect(posted().entry.message).toBe('failed to fetch config')
+
+    const emptyEvent = new Event('unhandledrejection')
+    emptyEvent.reason = null
+    window.dispatchEvent(emptyEvent)
+
+    expect(posted().entry.message).toBe('unhandled promise rejection')
+  })
+
+  it('uninstalls event handlers properly', async () => {
+    const { installGlobalHandlers } = await import('./global-handlers')
+    const fetchSpy = vi.fn(() => Promise.resolve({ ok: true }))
+    vi.stubGlobal('fetch', fetchSpy)
+    const uninstall = installGlobalHandlers(window)
+
+    uninstall()
+
+    const event = new Event('unhandledrejection')
+    event.reason = new Error('ignored')
+    window.dispatchEvent(event)
+
+    expect(fetchSpy).not.toHaveBeenCalled()
+  })
+})
