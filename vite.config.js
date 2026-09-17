@@ -8,10 +8,5 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     globals: true,
-    env: {
-      VITE_LOGCORE_ENABLED: 'true',
-      VITE_LOGCORE_URL: 'https://logcore.example.com',
-      VITE_LOGCORE_KEY: 'test-key',
-    },
   },
 })

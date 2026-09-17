@@ -1,5 +1,13 @@
 # React + Vite
 
+## Escenario de demo
+
+La integración de logcore se retiró para probar una instalación desde cero.
+`nextTaskLabel` conserva el fallo solicitado: al cargar una lista no vacía con
+todas las tareas completadas, intenta leer `title` de `undefined` y produce un
+`TypeError`. Una lista vacía y una lista con tareas pendientes se renderizan.
+Las pruebas documentan este escenario intencional.
+
 This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
 
 Currently, two official plugins are available:
